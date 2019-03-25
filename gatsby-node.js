@@ -1,8 +1,9 @@
-const { createFilePath } = require('gatsby-source-filesystem')
 const path = require('path')
+const { createFilePath } = require('gatsby-source-filesystem')
 
 const PostTemplate = path.resolve('./src/templates/post-template.js')
 const BlogTemplate = path.resolve('./src/templates/blog-template.js')
+const ProductTemplate = path.resolve('./src/templates/product-template.js')
 
 exports.onCreateNode = ({ node, getNode, actions }) => {
   const { createNodeField } = actions
@@ -20,7 +21,7 @@ exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
   const result = await graphql(`
   {
-  allMarkdownRemark {
+  allMarkdownRemark(limit: 1000) {
     edges {
       node {
         fields {
@@ -29,7 +30,15 @@ exports.createPages = async ({ graphql, actions }) => {
       }
     }
   }
-}
+
+  allContentfulProduct {
+    edges {
+      node {
+        slug
+        }
+      }
+    }
+  }
   `)
   const posts = result.data.allMarkdownRemark.edges
 
@@ -43,15 +52,16 @@ exports.createPages = async ({ graphql, actions }) => {
     })
   })
 
-  posts.forEach((_, index, postsArray) => {
-    const totalPages = postsArr.length
-    const postsPerPage = 1
+  const postsPerPage = 2
+  const totalPages = Math.ceil(posts.length / postsPerPage)
+
+  Array.from({ length: totalPages }).forEach((_, index) => {
     const currentPage = index + 1
     const isFirstPage = index === 0
     const isLastPage = currentPage === totalPages
 
     createPage({
-      path: isFirstPage ? '/blog' : `/blog${currentPage}`,
+      path: isFirstPage ? '/blog' : `/blog/${currentPage}`,
       component: BlogTemplate,
       context: {
         limit: postsPerPage,
@@ -60,6 +70,17 @@ exports.createPages = async ({ graphql, actions }) => {
         isLastPage,
         currentPage,
         totalPages
+      }
+    })
+  })
+
+  const products = result.data.allContentfulProduct.edges
+  products.forEach(({ node: product }) => {
+    createPage({
+      path: `/products/${product.slug}`,
+      component: ProductTemplate,
+      context: {
+        slug: product.slug
       }
     })
   })
