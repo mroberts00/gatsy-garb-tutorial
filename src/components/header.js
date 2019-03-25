@@ -1,6 +1,7 @@
 import { Link } from "gatsby"
 import PropTypes from "prop-types"
 import React from "react"
+import netlifyIdentity from 'netlify-identity-widget'
 
 import gatsbyLogo from '../images/gatsby-icon.png'
 
@@ -15,68 +16,82 @@ const NavLink = props => <Link
   {...props}
 />;
 
-const Header = ({ siteTitle }) => (
-  <header
-    style={{
-      background: `rebeccapurple`,
-      marginBottom: `1.45rem`,
-    }}
-  >
-    <div
-      style={{
-        display: 'flex',
-        alignItems: "center",
-        justifyContent: 'space-between',
-        margin: `0 auto`,
-        maxWidth: 960,
-        padding: `1.45rem 1.0875rem`,
-      }}
-    >
+class Header extends React.Component {
 
-      {/* Title / Logo area */}
-      <span style={{ display: 'flex', alignItems: 'center' }}>
-        <img src={gatsbyLogo} alt="Gatsby Garb Logo" style={{
-          width: '50px',
-          margin: '0 5px',
-          border: '3px solid orange',
-          borderRadius: '50%'
-        }} />
-        <h1 style={{ margin: 0 }}>
-          <NavLink to="/"> {siteTitle}  </NavLink>
-        </h1>
-      </span>
+  componentDidMount() {
+    netlifyIdentity.init()
+  }
 
-      <NavLink to="/blog"> Blog </NavLink>
+  render() {
 
-      <NavLink to="/products"> Store </NavLink>
+    const { siteTitle } = this.props
 
-      {/* shopping cart summary */}
-      <div style={{ color: "white", cursor: 'pointer' }} className="snipcart-summary snipcart-checkout">
-        <div>
-          <strong>My Cart</strong>
-        </div>
-        <div>
-          <span
-            className="snipcart-total-items"
-            style={{
-              fontWeight: 'bold'
-            }}
-          />
-          {" "}Items in cart
+    return (
+      <header
+        style={{
+          background: `rebeccapurple`,
+          marginBottom: `1.45rem`,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: "center",
+            justifyContent: 'space-between',
+            margin: `0 auto`,
+            maxWidth: 960,
+            padding: `1.45rem 1.0875rem`,
+          }}
+        >
+
+          {/* Title / Logo area */}
+          <span style={{ display: 'flex', alignItems: 'center' }}>
+            <img src={gatsbyLogo} alt="Gatsby Garb Logo" style={{
+              width: '50px',
+              margin: '0 5px',
+              border: '3px solid orange',
+              borderRadius: '50%'
+            }} />
+            <h1 style={{ margin: 0 }}>
+              <NavLink to="/"> {siteTitle}  </NavLink>
+            </h1>
+          </span>
+
+          <NavLink to="/blog"> Blog </NavLink>
+
+          <NavLink to="/products"> Store </NavLink>
+
+          <div data-netlify-identity-menu />
+
+          {/* shopping cart summary */}
+          <div style={{ color: "white", cursor: 'pointer' }} className="snipcart-summary snipcart-checkout">
+            <div>
+              <strong>My Cart</strong>
+            </div>
+            <div>
+              <span
+                className="snipcart-total-items"
+                style={{
+                  fontWeight: 'bold'
+                }}
+              />
+              {" "}Items in cart
       </div>
-        <div>
-          Total price{' '}
-          <span
-            style={{
-              fontWeight: 'bold'
-            }}
-            className='snipcart-total-price'
-          />
+            <div>
+              Total price{' '}
+              <span
+                style={{
+                  fontWeight: 'bold'
+                }}
+                className='snipcart-total-price'
+              />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </header>
-)
+      </header>
+    )
+  }
+}
 
 Header.propTypes = {
   siteTitle: PropTypes.string,
